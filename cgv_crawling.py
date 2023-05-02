@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import pandas as pd
+import time
 
 
 def crawling_title_starttime(areacode, theaterCode, theaterName, table, driver):
@@ -51,8 +52,8 @@ def crawling_location_theatername():
     driver=webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     for match in matches:
         if match[0] in ["01", "02", "202"]:
-            if match[0]=="01":
-                movie_table=crawling_title_starttime(match[0], match[1], match[2], movie_table, driver)
+            movie_table=crawling_title_starttime(match[0], match[1], match[2], movie_table, driver)
+            time.sleep(0.5)
         else:
             break
     driver.quit()
