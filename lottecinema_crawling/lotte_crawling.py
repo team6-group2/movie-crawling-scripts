@@ -72,7 +72,7 @@ def getMovieInfo():
                 # 러닝타임 계산
                 running_time = (end_hour - start_hour) * 60 + (end_minute - start_minute)
                 
-                move_data = {"theater_type":"롯데시네마", "theater_name":move_res['CinemaNameKR'], "location":city, "movie_title":move_res['MovieNameKR'], "start_time":move_res['StartTime'], "running_time":running_time}
+                move_data = {"theater_type":"LOTTE CINEMA", "theater_name":move_res['CinemaNameKR'], "location":city, "movie_title":move_res['MovieNameKR'], "start_time":move_res['StartTime'], "running_time":running_time}
 
                 all_movie.append(move_data)
 
