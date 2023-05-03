@@ -88,10 +88,10 @@ def megabox_crawl():
         movie_tbl['location'] = location[i]
         print(f'>>> {location[i]} 완료')
     
-    try:
-        movie_total = pd.concat([movie_total, movie_tbl])
-    except:
-        movie_total = movie_tbl
+        try:
+            movie_total = pd.concat([movie_total, movie_tbl])
+        except:
+            movie_total = movie_tbl
 
     WORKING_DIR = os.getcwd()
     movie_total.to_csv(f'output_file/메가박스 상영시간_{datetime.datetime.now()}.csv', encoding='utf-8', index = False )
