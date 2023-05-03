@@ -9,7 +9,7 @@ import pandas as pd
 import time
 
 
-def crawling_title_starttime(areacode, theaterCode, theaterName, table, driver):
+def crawling_title_starttime(areacode, theaterCode, theaterName, json, driver):
     if areacode=="01":
         location="서울"
     elif areacode=="02":
@@ -35,12 +35,12 @@ def crawling_title_starttime(areacode, theaterCode, theaterName, table, driver):
                     start_time=t.em.text
                     if not start_time:
                         start_time=t.a.em.text
-                    table=pd.concat([table, pd.DataFrame([["CGV", theaterName, location, movie_title, start_time]], columns=["theater_type", "theater_name", "location", "movie_title", "start_time"])],ignore_index=True)
+                    json["CGV"].append({"theater_type": "CGV", "theater_name": theaterName, "location": location, "movie_title": movie_title, "start_time": start_time })
                     # print(start_time)
-        return table
+        return json
     except Exception as error:
         # print(error)
-        return table
+        return json
 
 
 def crawling_location_theatername():
@@ -48,17 +48,18 @@ def crawling_location_theatername():
     script=soup.find("div", id="contents").script.string
     expression = r'"RegionCode":\s*"([^"]*)"\s*,\s*"TheaterCode":\s*"([^"]*)"\s*,\s*"TheaterName":\s*"([^"]*)'
     matches = re.findall(expression, script, re.DOTALL)
-    movie_table = pd.DataFrame(columns=["theater_type", "theater_name", "location", "movie_title", "start_time"])
+    movie_json = {"CGV":[]}
     driver=webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     for match in matches:
         if match[0] in ["01", "02", "202"]:
-            movie_table=crawling_title_starttime(match[0], match[1], match[2], movie_table, driver)
+            movie_json=crawling_title_starttime(match[0], match[1], match[2], movie_json, driver)
             time.sleep(0.5)
         else:
             break
     driver.quit()
 
-    print(movie_table)
+    print(movie_json)
+    return movie_json
 
 
 if __name__=="__main__":
