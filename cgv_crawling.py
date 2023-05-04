@@ -7,9 +7,9 @@ import requests
 import re
 import pandas as pd
 import time
+from datetime import date
 
-
-def crawling_title_starttime(areacode, theaterCode, theaterName, json, driver):
+def crawling_title_starttime(areacode, theaterCode, theaterName, today, json, driver):
     if areacode=="01":
         location="서울"
     elif areacode=="02":
@@ -18,7 +18,7 @@ def crawling_title_starttime(areacode, theaterCode, theaterName, json, driver):
         location="인천"
 
     try:
-        driver.get(f"http://www.cgv.co.kr/theaters/?areacode={areacode}&theaterCode={theaterCode}&date=20230502")
+        driver.get(f"http://www.cgv.co.kr/theaters/?areacode={areacode}&theaterCode={theaterCode}&date={today}")
         driver.implicitly_wait(10)
         iframe=driver.find_element(By.XPATH, "//iframe[@id='ifrm_movie_time_table']")
         driver.switch_to.frame(iframe)
@@ -49,10 +49,11 @@ def crawling_location_theatername():
     expression = r'"RegionCode":\s*"([^"]*)"\s*,\s*"TheaterCode":\s*"([^"]*)"\s*,\s*"TheaterName":\s*"([^"]*)'
     matches = re.findall(expression, script, re.DOTALL)
     movie_json = {"CGV":[]}
+    today=date.today().strftime("%Y%m%d")
     driver=webdriver.Chrome(service=Service(ChromeDriverManager().install()))
     for match in matches:
         if match[0] in ["01", "02", "202"]:
-            movie_json=crawling_title_starttime(match[0], match[1], match[2], movie_json, driver)
+            movie_json=crawling_title_starttime(match[0], match[1], match[2], today, movie_json, driver)
             time.sleep(0.5)
         else:
             break
