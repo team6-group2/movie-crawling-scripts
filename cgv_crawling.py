@@ -26,7 +26,7 @@ def crawling_title_starttime(areacode, theaterCode, theaterName, today, json, dr
             district=re.search(r"\b\w+시\b", district).group()
         else:
             district=re.search(r"\b\w+구\b", district).group()
-        print(district)
+        #print(district)
         iframe=driver.find_element(By.XPATH, "//iframe[@id='ifrm_movie_time_table']")
         driver.switch_to.frame(iframe)
         iframe_page_source=BeautifulSoup(driver.page_source, "html.parser")
