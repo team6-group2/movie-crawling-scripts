@@ -11,15 +11,22 @@ from datetime import date
 
 def crawling_title_starttime(areacode, theaterCode, theaterName, today, json, driver):
     if areacode=="01":
-        location="서울"
+        city="서울"
     elif areacode=="02":
-        location="경기도"
+        city="경기"
     elif areacode=="202":
-        location="인천"
+        city="인천"
+
 
     try:
         driver.get(f"http://www.cgv.co.kr/theaters/?areacode={areacode}&theaterCode={theaterCode}&date={today}")
         driver.implicitly_wait(10)
+        district=driver.find_element(By.XPATH, "//*[@id='contents']/div[2]/div[1]/div/div[2]/div[1]/strong").text
+        if areacode=="02":
+            district=re.search(r"\b\w+시\b", district).group()
+        else:
+            district=re.search(r"\b\w+구\b", district).group()
+        #print(district)
         iframe=driver.find_element(By.XPATH, "//iframe[@id='ifrm_movie_time_table']")
         driver.switch_to.frame(iframe)
         iframe_page_source=BeautifulSoup(driver.page_source, "html.parser")
@@ -35,7 +42,7 @@ def crawling_title_starttime(areacode, theaterCode, theaterName, today, json, dr
                     start_time=t.em.text
                     if not start_time:
                         start_time=t.a.em.text
-                    json["CGV"].append({"theater_type": "CGV", "theater_name": theaterName, "location": location, "movie_title": movie_title, "start_time": start_time })
+                    json["CGV"].append({"theater_type": "CGV", "theater_name": theaterName, "city": city, "district":district, "movie_title": movie_title, "start_time": start_time })
                     # print(start_time)
         return json
     except Exception as error:
@@ -43,7 +50,7 @@ def crawling_title_starttime(areacode, theaterCode, theaterName, today, json, dr
         return json
 
 
-def crawling_location_theatername():
+def crawling_city_theatername():
     soup=BeautifulSoup(requests.get("http://www.cgv.co.kr/theaters/").text, "html.parser")
     script=soup.find("div", id="contents").script.string
     expression = r'"RegionCode":\s*"([^"]*)"\s*,\s*"TheaterCode":\s*"([^"]*)"\s*,\s*"TheaterName":\s*"([^"]*)'
@@ -64,5 +71,5 @@ def crawling_location_theatername():
 
 
 if __name__=="__main__":
-    crawling_location_theatername()
+    crawling_city_theatername()
     
